@@ -17,7 +17,7 @@ from media_platform.http_client.response_processor import ResponseProcessor
 class AuthenticatedHTTPClient:
     USER_AGENT = 'WixMP Python SDK 2.x'
     APPLICATION_JSON = 'application/json'
-    RETRYABLE_CODES = [500, 503, 504, 429]
+    RETRYABLE_CODES = [500, 502, 503, 504, 429]
     RETRYABLE_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
     TIMEOUT = 60
 
@@ -25,9 +25,13 @@ class AuthenticatedHTTPClient:
         self._app_authenticator = app_authenticator
         self._session = requests.Session()
 
-        retry = urllib3.Retry(total=retry_count, backoff_factor=retry_backoff_factor,
-                              status_forcelist=self.RETRYABLE_CODES, method_whitelist=self.RETRYABLE_METHODS,
-                              raise_on_status=False)
+        retry = urllib3.Retry(
+            total=retry_count,
+            backoff_factor=retry_backoff_factor,
+            status_forcelist=self.RETRYABLE_CODES,
+            method_whitelist=self.RETRYABLE_METHODS,
+            raise_on_status=False
+        )
 
         self._session.mount('http://', HTTPAdapter(max_retries=retry))
         self._session.mount('https://', HTTPAdapter(max_retries=retry))
