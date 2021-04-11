@@ -7,7 +7,7 @@ from media_platform.service.media_platform_request import MediaPlatformRequest
 
 class FindSimilarImagesRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
-        super().__init__(authenticated_http_client, 'POST', base_url + '/visual_search', FileList)
+        super().__init__(authenticated_http_client, 'POST', f'{base_url}/visual_search', FileList)
 
         self.image_url = None
         self.collection_id = None
@@ -21,7 +21,7 @@ class FindSimilarImagesRequest(MediaPlatformRequest):
         return self
 
     def execute(self):
-        self.url = self.url + f'/collections/{self.collection_id}/search'
+        self.url = f'{self.url}/collections/{self.collection_id}/search'
         return super().execute()
 
     def _params(self) -> dict:

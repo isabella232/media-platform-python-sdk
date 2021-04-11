@@ -9,7 +9,7 @@ from media_platform.service.source import Source
 
 class IndexImageRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
-        super().__init__(authenticated_http_client, 'POST', base_url + '/visual_search', IndexImageJob)
+        super().__init__(authenticated_http_client, 'POST', f'{base_url}/visual_search', IndexImageJob)
 
         self.source = None
         self.callback = None
@@ -28,7 +28,7 @@ class IndexImageRequest(MediaPlatformRequest):
         return self
 
     def execute(self):
-        self.url = self.url + f'/collections/{self.collection_id}/index'
+        self.url = f'{self.url}/collections/{self.collection_id}/index'
         return super().execute()
 
     def _params(self) -> dict:
