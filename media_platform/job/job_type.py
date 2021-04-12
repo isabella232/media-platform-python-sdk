@@ -10,3 +10,4 @@ class JobType:
     subset_font = 'urn:job:text.font.subset'
     image_operation = 'urn:job:image.operation'
     av_scan = 'urn:job:av-scanner.scan'
+    index_image = 'urn:job:visual-search.index-image'
