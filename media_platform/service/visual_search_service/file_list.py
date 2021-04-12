@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import List, Dict
 
 from media_platform.lang.serialization import Deserializable
 from media_platform.service.file_descriptor import FileDescriptor
@@ -9,6 +10,5 @@ class FileList(Deserializable):
         self.files = files
 
     @classmethod
-    def deserialize(cls, data: dict) -> FileList:
-        files = [FileDescriptor.deserialize(f) for f in data]
-        return FileList(files)
+    def deserialize(cls, data: List[Dict]) -> FileList:
+        return FileList([FileDescriptor.deserialize(f) for f in data])
