@@ -28,7 +28,7 @@ class IndexImageRequest(MediaPlatformRequest):
         return self
 
     def execute(self):
-        self.url = f'{self.url}/collections/{self.collection_id}/index'
+        self.url = f'{self.url}/collections/{self.specification.collection_id}/index'
         return super().execute()
 
     def _params(self) -> dict:
