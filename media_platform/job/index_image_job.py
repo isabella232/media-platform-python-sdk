@@ -6,12 +6,17 @@ from media_platform.job.specification import Specification
 
 
 class IndexImageSpecification(Specification):
+    def __init__(self, collection_id):
+        self.collection_id = collection_id
+
     @classmethod
     def deserialize(cls, data):
-        return IndexImageSpecification()
+        return IndexImageSpecification(data.get('collectionId'))
 
     def serialize(self) -> dict:
-        return {}
+        return {
+            'collectionId': self.collection_id
+        }
 
 
 class IndexImageJob(Job):

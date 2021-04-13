@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
-from media_platform.job.index_image_job import IndexImageJob
+from media_platform.job.index_image_job import IndexImageJob, IndexImageSpecification
 from media_platform.service.callback import Callback
 from media_platform.service.media_platform_request import MediaPlatformRequest
 from media_platform.service.source import Source
@@ -13,14 +13,14 @@ class IndexImageRequest(MediaPlatformRequest):
 
         self.source = None
         self.callback = None
-        self.collection_id = None
+        self.specification = None
 
     def set_source(self, source: Source) -> IndexImageRequest:
         self.source = source
         return self
 
-    def set_collection_id(self, collection_id: str) -> IndexImageRequest:
-        self.collection_id = collection_id
+    def set_specification(self, specification: IndexImageSpecification):
+        self.specification = specification
         return self
 
     def set_callback(self, callback: Callback):
@@ -28,12 +28,12 @@ class IndexImageRequest(MediaPlatformRequest):
         return self
 
     def execute(self):
-        self.url = f'{self.url}/collections/{self.collection_id}/index'
+        self.url = f'{self.url}/collections/{self.specification.collection_id}/index'
         return super().execute()
 
     def _params(self) -> dict:
         return {
             'source': self.source.serialize(),
             'jobCallback': self.callback.serialize() if self.callback else None,
-            'specification': None,
+            'specification': self.specification.serialize() if self.specification else None,
         }

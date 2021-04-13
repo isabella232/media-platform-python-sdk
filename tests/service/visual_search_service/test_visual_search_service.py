@@ -8,7 +8,7 @@ from hamcrest import assert_that, instance_of, is_
 from media_platform import FileDescriptor
 from media_platform.auth.app_authenticator import AppAuthenticator
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
-from media_platform.job.index_image_job import IndexImageJob
+from media_platform.job.index_image_job import IndexImageJob, IndexImageSpecification
 from media_platform.service.file_descriptor import FileType
 from media_platform.service.visual_search_service.file_list import FileList
 from media_platform.service.rest_result import RestResult
@@ -33,7 +33,7 @@ class TestVisualSearchService(unittest.TestCase):
             self.visual_search_service
                 .index_image_request()
                 .set_source(Source(self.file_path))
-                .set_collection_id(self.test_collection_id)
+                .set_specification(IndexImageSpecification(self.test_collection_id))
         ).execute()
 
         assert_that(job, instance_of(IndexImageJob))
