@@ -1,6 +1,6 @@
 from abc import ABC
 
-from typing import Type
+from typing import Type, Dict
 
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.lang.serialization import Deserializable
@@ -14,7 +14,7 @@ class MediaPlatformRequest(ABC):
         self.url = url
         self.response_payload_type = response_payload_type
 
-    def execute(self) -> Deserializable or None:
+    def execute(self) -> Deserializable:
         self.validate()
 
         if self.method == 'GET':
@@ -33,5 +33,5 @@ class MediaPlatformRequest(ABC):
         pass
 
     # noinspection PyMethodMayBeStatic
-    def _params(self) -> dict:
+    def _params(self) -> Dict:
         return {}

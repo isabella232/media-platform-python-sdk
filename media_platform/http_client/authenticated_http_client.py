@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Type, Dict
 
 import urllib3
 import requests
@@ -21,7 +21,7 @@ class AuthenticatedHTTPClient:
     RETRYABLE_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
     TIMEOUT = 60
 
-    def __init__(self, app_authenticator: AppAuthenticator, retry_count: int = 5, retry_backoff_factor: float = 0.2):
+    def __init__(self, app_authenticator: AppAuthenticator, retry_count: int = 3, retry_backoff_factor: float = 0.1):
         self._app_authenticator = app_authenticator
         self._session = requests.Session()
 
@@ -36,19 +36,19 @@ class AuthenticatedHTTPClient:
         self._session.mount('http://', HTTPAdapter(max_retries=retry))
         self._session.mount('https://', HTTPAdapter(max_retries=retry))
 
-    def get(self, url: str, params: dict = None, payload_type: Deserializable = None) -> Deserializable or None:
+    def get(self, url: str, params: Dict = None, payload_type: Deserializable = None) -> Deserializable:
         return self._send_request('GET', url, params=params, payload_type=payload_type)
 
-    def post(self, url: str, data: dict = None, payload_type: Deserializable = None) -> Deserializable or None:
+    def post(self, url: str, data: Dict = None, payload_type: Deserializable = None) -> Deserializable:
         return self._send_request('POST', url, json=data, payload_type=payload_type)
 
-    def put(self, url: str, data: dict = None, payload_type: Deserializable = None) -> Deserializable or None:
+    def put(self, url: str, data: Dict = None, payload_type: Deserializable = None) -> Deserializable:
         return self._send_request('PUT', url, json=data, payload_type=payload_type)
 
-    def delete(self, url: str, params: dict = None, payload_type: Deserializable = None) -> Deserializable or None:
+    def delete(self, url: str, params: Dict = None, payload_type: Deserializable = None) -> Deserializable:
         return self._send_request('DELETE', url, params=params, payload_type=payload_type)
 
-    def post_data(self, url: str, content: str, mime_type: str, params: dict = None,
+    def post_data(self, url: str, content: str, mime_type: str, params: Dict = None,
                   payload_type: Type[Deserializable] = None, filename: str = None,
                   response_processor: callable = None) -> Deserializable or None:
         fields = {
@@ -70,7 +70,7 @@ class AuthenticatedHTTPClient:
         else:
             return ResponseProcessor.process(response, payload_type)
 
-    def _send_request(self, verb: str, url: str, json: dict = None, params: dict = None,
+    def _send_request(self, verb: str, url: str, json: Dict = None, params: Dict = None,
                       payload_type: Deserializable = None) -> Deserializable or None:
         try:
             response = self._session.request(verb, url, params=params, json=json, headers=self._headers(),
@@ -82,9 +82,7 @@ class AuthenticatedHTTPClient:
 
     def _headers(self) -> CaseInsensitiveDict:
         headers = self._base_headers()
-
-        signed_token = self._app_authenticator.default_signed_token()
-        headers['Authorization'] = signed_token
+        headers['Authorization'] = self._app_authenticator.default_signed_token()
 
         return headers
 
