@@ -10,9 +10,11 @@ from media_platform.auth.app_authenticator import AppAuthenticator
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.job.index_image_job import IndexImageJob, IndexImageSpecification
 from media_platform.service.file_descriptor import FileType
+from media_platform.service.visual_search_service.collection import Collection
 from media_platform.service.visual_search_service.file_list import FileList
 from media_platform.service.rest_result import RestResult
 from media_platform.service.source import Source
+from media_platform.service.visual_search_service.model import Model
 from media_platform.service.visual_search_service.visual_search_service import VisualSearchService
 
 
@@ -57,6 +59,38 @@ class TestVisualSearchService(unittest.TestCase):
         for idx in range(len(file_list.files)):
             assert_that(file_list.files[idx].file_id, is_(f'file-id-{idx}'))
 
+    @httpretty.activate
+    def test_create_model_request(self):
+        self._register_create_model_request()
+
+        model = (
+            self.visual_search_service
+                .create_model_request()
+                .set_model_id('test-model-id')
+                .set_name('test-model-name')
+                .set_description('test-model-description')
+        ).execute()
+
+        assert_that(model, instance_of(Model))
+        assert_that(model.model_id, is_('test-model-id'))
+
+    @httpretty.activate
+    def test_create_collection_request(self):
+        self._register_create_collection_request()
+
+        collection = (
+            self.visual_search_service
+                .create_collection_request()
+                .set_collection_id('test-collection-id')
+                .set_name('test-collection-name')
+                .set_project_id('test-project-id')
+                .set_model_id('test-model-id')
+        ).execute()
+
+        assert_that(collection, instance_of(Collection))
+        assert_that(collection.collection_id, is_('test-collection-id'))
+        assert_that(collection.model_id, is_('test-model-id'))
+
     def _register_scan_file_request(self):
         payload = {
             'type': 'urn:job:visual-search.index-image',
@@ -89,5 +123,32 @@ class TestVisualSearchService(unittest.TestCase):
         httpretty.register_uri(
             httpretty.POST,
             f'https://fish.appspot.com/_api/visual_search/collections/{self.test_collection_id}/search',
+            json.dumps(response.serialize())
+        )
+
+    def _register_create_model_request(self):
+        payload = {
+            "id": "test-model-id",
+            "name": "test-model-name",
+            "description": "test-model-description"
+        }
+        response = RestResult(0, 'OK', payload)
+        httpretty.register_uri(
+            httpretty.POST,
+            f'https://fish.appspot.com/_api/visual_search/models',
+            json.dumps(response.serialize())
+        )
+
+    def _register_create_collection_request(self):
+        payload = {
+            "id": "test-collection-id",
+            "name": "test-collection-name",
+            "projectId": "test-project-id",
+            "modelId": "test-model-id"
+        }
+        response = RestResult(0, 'OK', payload)
+        httpretty.register_uri(
+            httpretty.POST,
+            f'https://fish.appspot.com/_api/visual_search/collections',
             json.dumps(response.serialize())
         )
