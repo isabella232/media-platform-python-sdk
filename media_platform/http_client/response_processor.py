@@ -8,6 +8,7 @@ from media_platform.exception.forbidden_exception import ForbiddenException
 from media_platform.exception.media_platform_exception import MediaPlatformException
 from media_platform.exception.not_found_exception import NotFoundException
 from media_platform.exception.unauthorized_exception import UnauthorizedException
+from media_platform.exception.unsupported_media_exception import UnsupportedMediaException
 from media_platform.service.rest_result import RestResult
 
 
@@ -59,6 +60,9 @@ class ResponseProcessor:
 
         elif response.status_code == 409:
             raise ConflictException(message)
+
+        elif response.status_code == 415:
+            raise UnsupportedMediaException(message)
 
         elif response.status_code == 500:
             raise ServerErrorException(message)
