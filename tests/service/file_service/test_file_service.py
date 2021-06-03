@@ -1,9 +1,10 @@
 import copy
 import json
 import unittest
+from typing import List
 
 import httpretty
-from hamcrest import assert_that, instance_of, is_, contains_string, starts_with, has_length
+from hamcrest import assert_that, instance_of, is_, contains_string, starts_with
 
 from media_platform.auth.app_authenticator import AppAuthenticator
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
@@ -154,21 +155,23 @@ class TestFileService(unittest.TestCase):
             self.file_service.create_file_request().set_path('/fish')
         ).execute()
 
-        assert_that(response.file_descriptors, instance_of(list))
-        assert_that(response.file_descriptors, has_length(1))
-        assert_that(response.file_descriptors[0], instance_of(FileDescriptor))
-        assert_that(response.file_descriptors[0].serialize(), is_(expected_file_descriptor.serialize()))
+        self.assertEqual(1, len(response.file_descriptors))
+        self.assertIsInstance(response.file_descriptors, list)
+        self.assertIsInstance(response.file_descriptors[0], FileDescriptor)
+        self.assertEqual(expected_file_descriptor.serialize(), response.file_descriptors[0].serialize())
 
-        assert_that(json.loads(httpretty.last_request().body),
-                    is_({
-                        'mimeType': FileMimeType.directory,
-                        'path': '/fish',
-                        'size': 0,
-                        'type': FileType.directory,
-                        'acl': ACL.public,
-                        'id': None,
-                        'bucket': None
-                    }))
+        self.assertEqual(
+            {
+                'mimeType': FileMimeType.directory,
+                'path': '/fish',
+                'size': 0,
+                'type': FileType.directory,
+                'acl': ACL.public,
+                'id': None,
+                'bucket': None
+            },
+            json.loads(httpretty.last_request().body)
+        )
 
     @httpretty.activate
     def test_update_file_request(self):
