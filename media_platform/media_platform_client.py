@@ -11,6 +11,7 @@ from media_platform.service.scanner_service.scanner_service import ScannerServic
 from media_platform.service.text_service.text_service import TextService
 from media_platform.service.transcode_service.transcode_service import TranscodeService
 from media_platform.service.video_service.video_service import VideoService
+from media_platform.service.visual_search_service.visual_search_service import VisualSearchService
 
 
 class MediaPlatformClient:
@@ -29,3 +30,4 @@ class MediaPlatformClient:
         self.text_service = TextService(domain, authenticated_http_client)
         self.live_service = LiveService(domain, authenticated_http_client)
         self.scanner_service = ScannerService(domain, authenticated_http_client)
+        self.visual_search_service = VisualSearchService(domain, authenticated_http_client)

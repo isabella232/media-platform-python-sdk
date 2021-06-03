@@ -12,6 +12,7 @@ from media_platform.exception.media_platform_exception import MediaPlatformExcep
 from media_platform.exception.not_found_exception import NotFoundException
 from media_platform.exception.server_error_exception import ServerErrorException
 from media_platform.exception.unauthorized_exception import UnauthorizedException
+from media_platform.exception.unsupported_media_exception import UnsupportedMediaException
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.rest_result import RestResult
 from tests.http_client.dummy_payload import DummyPayload
@@ -109,6 +110,17 @@ class TestAuthenticatedHTTPClient(unittest.TestCase):
         )
 
         with self.assertRaises(ConflictException):
+            self.authenticated_http_client.get(self.test_endpoint)
+
+    @httpretty.activate
+    def test_get_415(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            self.test_endpoint,
+            status=415
+        )
+
+        with self.assertRaises(UnsupportedMediaException):
             self.authenticated_http_client.get(self.test_endpoint)
 
     @httpretty.activate
