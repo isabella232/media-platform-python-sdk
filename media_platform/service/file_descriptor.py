@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Dict
 
 from media_platform.lang import datetime_serialization
 from media_platform.lang.serialization import Serializable, Deserializable
@@ -25,14 +26,13 @@ class FileType:
 class FileMimeType:
     directory = 'application/vnd.wix-media.dir'
     symlink = 'application/vnd.wix-media.symlink'
-
     defualt = 'application/octet-stream'
 
 
 class FileDescriptor(Serializable, Deserializable):
     def __init__(self, path: str, file_id: str, file_type: FileType, mime_type: str, size: int, acl: ACL = ACL.public,
                  lifecycle: Lifecycle = None, file_hash: str = None,
-                 date_created: datetime = None, date_updated: datetime = None):
+                 date_created: datetime = None, date_updated: datetime = None, bucket: str = None):
         self._validate_values(acl, path)
 
         self.path = path
@@ -45,19 +45,26 @@ class FileDescriptor(Serializable, Deserializable):
         self.hash = file_hash
         self.date_created = date_created or datetime.utcnow()
         self.date_updated = date_updated or datetime.utcnow()
+        self.bucket = bucket
 
     @classmethod
-    def deserialize(cls, data: dict) -> FileDescriptor:
+    def deserialize(cls, data: Dict) -> FileDescriptor:
         lifecycle_data = data.get('lifecycle')
-        lifecycle = Lifecycle.deserialize(lifecycle_data) if lifecycle_data else None
+        return FileDescriptor(
+            data['path'],
+            data['id'],
+            data['type'],
+            data['mimeType'],
+            data['size'],
+            data['acl'],
+            Lifecycle.deserialize(lifecycle_data) if lifecycle_data else None, data.get('hash'),
+            datetime_serialization.deserialize(data.get('dateCreated')),
+            datetime_serialization.deserialize(data.get('dateUpdated')),
+            data.get('bucket')
+        )
 
-        return FileDescriptor(data['path'], data['id'], data['type'], data['mimeType'], data['size'], data['acl'],
-                              lifecycle, data.get('hash'),
-                              datetime_serialization.deserialize(data.get('dateCreated')),
-                              datetime_serialization.deserialize(data.get('dateUpdated')))
-
-    def serialize(self) -> dict:
-        return {
+    def serialize(self) -> Dict:
+        data = {
             'id': self.file_id,
             'path': self.path,
             'type': self.type,
@@ -70,6 +77,11 @@ class FileDescriptor(Serializable, Deserializable):
             'dateCreated': datetime_serialization.serialize(self.date_created)
         }
 
+        if self.bucket:
+            data['bucket'] = self.bucket
+
+        return data
+
     @staticmethod
     def _validate_values(acl, path):
         FileDescriptor.path_validator(path)
@@ -78,9 +90,9 @@ class FileDescriptor(Serializable, Deserializable):
     @staticmethod
     def path_validator(path: str):
         if not path.startswith('/'):
-            raise ValueError('path must start with "/"' % path)
+            raise ValueError(f'path must start with "/"')
 
     @staticmethod
     def acl_validator(acl):
         if not ACL.has_value(acl):
-            raise ValueError('ACL %s not supported' % acl)
+            raise ValueError(f'ACL {acl} not supported')
