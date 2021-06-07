@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import List, Union, cast, Dict
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.job.create_archive_job import ArchiveSource
 from media_platform.service.destination import Destination
@@ -27,11 +29,11 @@ class CreateArchiveManifestRequest(MediaPlatformRequest):
         self.destination = None
         self.algorithm = 'zip'
 
-    def set_sources(self, sources: [Source or ArchiveSource]) -> CreateArchiveManifestRequest:
+    def set_sources(self, sources: List[Union[Source, ArchiveSource]]) -> CreateArchiveManifestRequest:
         self.sources = sources
         return self
 
-    def add_sources(self, *sources: [Source or ArchiveSource]) -> CreateArchiveManifestRequest:
+    def add_sources(self, *sources: Union[Source, ArchiveSource]) -> CreateArchiveManifestRequest:
         self.sources.extend(sources)
         return self
 
@@ -48,9 +50,9 @@ class CreateArchiveManifestRequest(MediaPlatformRequest):
         return self
 
     def execute(self) -> FileDescriptor:
-        return super().execute()
+        return cast(FileDescriptor, super().execute())
 
-    def _params(self) -> dict:
+    def _params(self) -> Dict:
         return {
             'name': self.name,
             'sources': [source.serialize() for source in self.sources if source],
