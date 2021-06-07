@@ -41,4 +41,4 @@ class TestFileDescriptor(TestCase):
 
         file_descriptor = FileDescriptor.deserialize(file_data)
 
-        assert_that(file_descriptor.serialize(), is_(file_data))
+        self.assertEqual(file_data, file_descriptor.serialize())
