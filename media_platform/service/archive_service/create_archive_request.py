@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Union, cast, Dict
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.job.create_archive_job import ArchiveSource, CreateArchiveJob, ArchiveType
 from media_platform.service.callback import Callback
@@ -16,11 +18,11 @@ class CreateArchiveRequest(MediaPlatformRequest):
         self.archive_type = 'zip'
         self.callback = None
 
-    def set_sources(self, sources: [Source or ArchiveSource]) -> CreateArchiveRequest:
+    def set_sources(self, sources: Union[Source, ArchiveSource]) -> CreateArchiveRequest:
         self.sources = sources
         return self
 
-    def add_sources(self, *sources: [Source or ArchiveSource]) -> CreateArchiveRequest:
+    def add_sources(self, *sources: Union[Source, ArchiveSource]) -> CreateArchiveRequest:
         self.sources.extend(sources)
         return self
 
@@ -37,9 +39,9 @@ class CreateArchiveRequest(MediaPlatformRequest):
         return self
 
     def execute(self) -> CreateArchiveJob:
-        return super().execute()
+        return cast(CreateArchiveJob, super().execute())
 
-    def _params(self) -> dict:
+    def _params(self) -> Dict:
         return {
             'sources': [source.serialize() for source in self.sources if source],
             'destination': self.destination.serialize(),

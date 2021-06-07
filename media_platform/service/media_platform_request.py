@@ -26,7 +26,7 @@ class MediaPlatformRequest(ABC):
         elif self.method == 'DELETE':
             return self.authenticated_http_client.delete(self.url, self._params(), self.response_payload_type)
         else:
-            raise ValueError('method not supported %s' % self.method)
+            raise ValueError(f'method not supported {self.method}')
 
     # override for request pre-flight check
     def validate(self):
