@@ -57,7 +57,8 @@ class FileDescriptor(Serializable, Deserializable):
             data['mimeType'],
             data['size'],
             data['acl'],
-            Lifecycle.deserialize(lifecycle_data) if lifecycle_data else None, data.get('hash'),
+            Lifecycle.deserialize(lifecycle_data) if lifecycle_data else None,
+            data.get('hash'),
             datetime_serialization.deserialize(data.get('dateCreated')),
             datetime_serialization.deserialize(data.get('dateUpdated')),
             data.get('bucket')
