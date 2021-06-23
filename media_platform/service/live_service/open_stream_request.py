@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.live_service.enforced_stream_params import EnforcedStreamParams
 from media_platform.service.live_service.geo_location import GeoLocation
@@ -14,15 +16,16 @@ from media_platform.service.media_platform_request import MediaPlatformRequest
 class OpenStreamRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
         super().__init__(authenticated_http_client, 'POST', base_url + '/live/streams', LiveStream)
-        self.protocol: StreamProtocol or None = None
-        self.dvr: StreamDVR or None = None
-        self.geo: GeoLocation or None = None
-        self.max_stream_time_sec: int or None = None
-        self.state_notification: StreamStateNotification or None = None
+        self.protocol: Optional[StreamProtocol] = None
+        self.dvr: Optional[StreamDVR] = None
+        self.geo: Optional[GeoLocation] = None
+        self.max_stream_time_sec: Optional[int] = None
+        self.state_notification: Optional[StreamStateNotification] = None
         self.stream_type: StreamType = StreamType.event
-        self.connect_timeout: int or None = None
-        self.reconnect_timeout: int or None = None
-        self.enforced_stream_params: EnforcedStreamParams or None = None
+        self.connect_timeout: Optional[int] = None
+        self.reconnect_timeout: Optional[int] = None
+        self.enforced_stream_params: Optional[EnforcedStreamParams] = None
+
 
     def set_protocol(self, protocol: StreamProtocol) -> OpenStreamRequest:
         self.protocol = protocol
