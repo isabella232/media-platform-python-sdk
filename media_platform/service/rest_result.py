@@ -24,4 +24,4 @@ class RestResult(Serializable, Deserializable):
     def raise_for_code(self):
         if self.code != 0:
             # todo: code -> exception mapper
-            raise MediaPlatformException()
+            raise MediaPlatformException(f'{self.code}: {self.message}')
