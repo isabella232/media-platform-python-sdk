@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Dict
 
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.live_service.enforced_stream_params import EnforcedStreamParams
@@ -25,7 +25,7 @@ class OpenStreamRequest(MediaPlatformRequest):
         self.connect_timeout: Optional[int] = None
         self.reconnect_timeout: Optional[int] = None
         self.enforced_stream_params: Optional[EnforcedStreamParams] = None
-
+        self.host_key: Optional[str] = None
 
     def set_protocol(self, protocol: StreamProtocol) -> OpenStreamRequest:
         self.protocol = protocol
@@ -63,7 +63,17 @@ class OpenStreamRequest(MediaPlatformRequest):
         self.enforced_stream_params = enforced_stream_params
         return self
 
-    def _params(self) -> dict:
+    def set_host_key(self, host_key: str) -> OpenStreamRequest:
+        self.host_key = host_key
+        return self
+
+    def execute(self) -> LiveStream:
+        if self.host_key:
+            self.url += '?host_key=' + self.host_key
+
+        return super().execute()
+
+    def _params(self) -> Dict:
         return {
             'protocol': self.protocol,
             'maxStreamingSec': self.max_stream_time_sec,
