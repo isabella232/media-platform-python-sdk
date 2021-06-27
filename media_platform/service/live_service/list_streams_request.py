@@ -16,13 +16,15 @@ class ListStreamsRequest(MediaPlatformRequest):
                  page_size: int = None,
                  order_by: LiveStreamListOrder = None,
                  order_direction: LiveStreamListOrderDirection = None,
-                 next_page_token: str = None):
+                 next_page_token: str = None,
+                 version: str = None):
         super().__init__(authenticated_http_client, 'GET', base_url + '/live/streams', ListStreamsResponse)
         self.page_size = int(page_size) if page_size else None
         self.order_by = order_by
         self.order_direction = order_direction
         self.state = state
         self.next_page_token = next_page_token
+        self.version = version
 
     def _params(self) -> Dict:
         return {
@@ -30,5 +32,6 @@ class ListStreamsRequest(MediaPlatformRequest):
             'pageSize': self.page_size,
             'orderBy': self.order_by,
             'orderDirection': self.order_direction,
-            'nextPageToken': self.next_page_token
+            'nextPageToken': self.next_page_token,
+            'version': self.version
         }

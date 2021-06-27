@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Dict
+from typing import Optional, Dict, cast
 
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.live_service.enforced_stream_params import EnforcedStreamParams
@@ -71,7 +71,7 @@ class OpenStreamRequest(MediaPlatformRequest):
         if self.version:
             self.url += '?version=' + self.version
 
-        return super().execute()
+        return cast(LiveStream, super().execute())
 
     def _params(self) -> Dict:
         return {
