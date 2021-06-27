@@ -25,7 +25,7 @@ class OpenStreamRequest(MediaPlatformRequest):
         self.connect_timeout: Optional[int] = None
         self.reconnect_timeout: Optional[int] = None
         self.enforced_stream_params: Optional[EnforcedStreamParams] = None
-        self.host_key: Optional[str] = None
+        self.version: Optional[str] = None
 
     def set_protocol(self, protocol: StreamProtocol) -> OpenStreamRequest:
         self.protocol = protocol
@@ -63,13 +63,13 @@ class OpenStreamRequest(MediaPlatformRequest):
         self.enforced_stream_params = enforced_stream_params
         return self
 
-    def set_host_key(self, host_key: str) -> OpenStreamRequest:
-        self.host_key = host_key
+    def set_version(self, host_key: str) -> OpenStreamRequest:
+        self.version = host_key
         return self
 
     def execute(self) -> LiveStream:
-        if self.host_key:
-            self.url += '?host_key=' + self.host_key
+        if self.version:
+            self.url += '?version=' + self.version
 
         return super().execute()
 

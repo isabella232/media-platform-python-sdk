@@ -9,21 +9,21 @@ class GetStreamRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
         super().__init__(authenticated_http_client, 'GET', base_url + '/live/stream/', LiveStream)
         self.id = None
-        self.host_key = None
+        self.version = None
         self._url = base_url + '/live/stream/'
 
     def set_id(self, stream_id: str) -> GetStreamRequest:
         self.id = stream_id
         return self
 
-    def set_host_key(self, host_key: str) -> GetStreamRequest:
-        self.host_key = host_key
+    def set_version(self, version: str) -> GetStreamRequest:
+        self.version = version
         return self
 
     def execute(self) -> LiveStream:
         self.url = self._url + self.id
-        if self.host_key:
-            self.url += '?host_key=' + self.host_key
+        if self.version:
+            self.url += '?version=' + self.version
 
         return super().execute()
 
