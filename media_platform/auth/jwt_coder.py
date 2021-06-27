@@ -1,4 +1,4 @@
-from jose import jwt
+import jwt
 
 from media_platform.auth.token import Token
 
