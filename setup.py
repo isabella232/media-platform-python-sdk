@@ -20,7 +20,7 @@ setup(
     ],
     packages=find_packages(include=('media_platform', 'media_platform.*',)),
     install_requires=[
-        'python-jose[cryptography]',
+        'PyJWT[crypto]',
         'requests',
         'requests-toolbelt',
         'furl',
