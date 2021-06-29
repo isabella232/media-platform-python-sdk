@@ -1,6 +1,6 @@
 from abc import ABC
 
-from typing import Type, Dict
+from typing import Type, Dict, Union, Optional
 
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.lang.serialization import Deserializable
@@ -8,13 +8,13 @@ from media_platform.lang.serialization import Deserializable
 
 class MediaPlatformRequest(ABC):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, method: str, url: str,
-                 response_payload_type: Type[Deserializable] = None):
+                 response_payload_type: Union[Type[Deserializable], Type[bytes]] = None):
         self.authenticated_http_client = authenticated_http_client
         self.method = method
         self.url = url
         self.response_payload_type = response_payload_type
 
-    def execute(self) -> Deserializable:
+    def execute(self) -> Optional[Union[Deserializable, bytes]]:
         self.validate()
 
         if self.method == 'GET':

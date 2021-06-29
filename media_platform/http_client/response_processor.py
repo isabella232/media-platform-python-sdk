@@ -1,3 +1,5 @@
+from typing import Union, List, Optional, Any, Type
+
 import requests
 
 from media_platform.exception.bad_gateway_exception import BadGatewayException
@@ -11,20 +13,23 @@ from media_platform.exception.unauthorized_exception import UnauthorizedExceptio
 from media_platform.exception.unsupported_media_exception import UnsupportedMediaException
 from media_platform.service.rest_result import RestResult
 
+PayloadType = Union[Type[Deserializable], Type[List[Deserializable]]]
+ResponseType = Union[Deserializable, bytes]
 
 class ResponseProcessor:
-
     @staticmethod
-    def process(response: requests.Response, payload_type: Deserializable = None) -> object or None:
+    def process(response: requests.Response, payload_type: PayloadType = None) -> Optional[ResponseType]:
         if 200 <= response.status_code <= 299:
             return ResponseProcessor._handle_success(response, payload_type)
         else:
             ResponseProcessor._handle_error(response)
 
     @classmethod
-    def _handle_success(cls, response: requests.Response,
-                        payload_type: Deserializable or [Deserializable]) -> object or None:
+    def _handle_success(cls, response: requests.Response, payload_type: PayloadType) -> Optional[ResponseType]:
         try:
+            if payload_type is bytes:
+                return response.content
+
             rest_result = RestResult.deserialize(response.json())
             rest_result.raise_for_code()
 
@@ -46,6 +51,7 @@ class ResponseProcessor:
         try:
             rest_result = RestResult.deserialize(response.json())
             message = rest_result.message
+
         except (ValueError, KeyError):
             message = response.content
 
