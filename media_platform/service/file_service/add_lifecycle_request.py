@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Optional
 
+from media_platform import FileDescriptor
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.lifecycle import Lifecycle
 from media_platform.service.media_platform_request import MediaPlatformRequest
