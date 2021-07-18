@@ -29,7 +29,7 @@ class AuthenticatedHTTPClient:
             total=retry_count,
             backoff_factor=retry_backoff_factor,
             status_forcelist=self.RETRYABLE_CODES,
-            method_whitelist=self.RETRYABLE_METHODS,
+            allowed_methods=self.RETRYABLE_METHODS,
             raise_on_status=False
         )
 

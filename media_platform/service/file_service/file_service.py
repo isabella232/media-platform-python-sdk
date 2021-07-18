@@ -1,5 +1,6 @@
 from media_platform.auth.app_authenticator import AppAuthenticator
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
+from media_platform.service.file_service.add_lifecycle_request import AddLifecycleRequest
 from media_platform.service.file_service.copy_file_request import CopyFileRequest
 from media_platform.service.file_service.create_file_request import CreateFileRequest
 from media_platform.service.file_service.create_files_request import CreateFilesRequest
@@ -31,6 +32,9 @@ class FileService(MediaPlatformService):
 
     def update_file_request(self) -> UpdateFileRequest:
         return UpdateFileRequest(self._authenticated_http_client, self._base_url)
+
+    def add_lifecycle_request(self, *args, **kwargs) -> AddLifecycleRequest:
+        return AddLifecycleRequest(self._authenticated_http_client, self._base_url, *args, **kwargs)
 
     def create_files_request(self) -> CreateFilesRequest:
         return CreateFilesRequest(self._authenticated_http_client, self._base_url)

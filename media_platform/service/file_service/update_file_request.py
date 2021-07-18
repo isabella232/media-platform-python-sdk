@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Dict
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.file_descriptor import FileDescriptor, ACL
 from media_platform.service.media_platform_request import MediaPlatformRequest
@@ -36,7 +38,7 @@ class UpdateFileRequest(MediaPlatformRequest):
         if not self.path and not self.file_id:
             raise ValueError('must provide path or id')
 
-    def _params(self) -> dict:
+    def _params(self) -> Dict:
         return {
             'id': self.file_id,
             'path': self.path,
