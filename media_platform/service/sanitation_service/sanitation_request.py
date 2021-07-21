@@ -14,6 +14,8 @@ class SanitationRequest(MediaPlatformRequest):
         super().__init__(authenticated_http_client, 'POST', base_url + '/security/sanitize', SanitationResponse)
         self.source = None
         self.destination = None
+        self.optimize = True
+        self.sanitize = True
 
     def set_source(self, source: Source) -> SanitationRequest:
         self.source = source
@@ -23,10 +25,20 @@ class SanitationRequest(MediaPlatformRequest):
         self.destination = destination
         return self
 
+    def set_optimize(self, optimize: bool) -> SanitationRequest:
+        self.optimize = optimize
+        return self
+
+    def set_sanitize(self, sanitize: bool) -> SanitationRequest:
+        self.sanitize = sanitize
+        return self
+
     def _params(self) -> dict:
         return {
             'source': self.source.serialize(),
             'destination': self.destination.serialize(),
+            'optimize': self.optimize,
+            'sanitize': self.sanitize,
         }
 
     def execute(self) -> SanitationResponse:
