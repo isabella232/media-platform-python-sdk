@@ -16,7 +16,7 @@ class SanitationNode(Serializable, Deserializable):
         }
 
     @classmethod
-    def deserialize(cls, data: dict):
+    def deserialize(cls, data: Dict):
         return SanitationNode(data['name'], data['value'])
 
 
@@ -32,7 +32,7 @@ class SanitationParams(Serializable, Deserializable):
         }
 
     @classmethod
-    def deserialize(cls, data: dict):
+    def deserialize(cls, data: Dict):
         return SanitationParams(data['sanitized'], [SanitationNode.deserialize(node) for node in data['removedNodes']])
 
 
@@ -48,7 +48,7 @@ class SanitationResult(Serializable, Deserializable):
         }
 
     @classmethod
-    def deserialize(cls, data: dict):
+    def deserialize(cls, data: Dict):
         return SanitationResult(data['optimized'], SanitationParams.deserialize(data['sanitation']))
 
 
@@ -64,7 +64,7 @@ class SanitationResponse(Serializable, Deserializable):
         }
 
     @classmethod
-    def deserialize(cls, data: dict):
+    def deserialize(cls, data: Dict):
         file_descriptor = FileDescriptor.deserialize(data['fileDescriptor'])
         sanitation_result = SanitationResult.deserialize(data['sanitationResult'])
 
