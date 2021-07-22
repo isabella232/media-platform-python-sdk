@@ -48,5 +48,5 @@ class UpdateFileRequest(MediaPlatformRequest):
             'id': self.file_id,
             'path': self.path,
             'acl': self.acl,
-            'mime_type': self.mime_type
+            'mimeType': self.mime_type
         }

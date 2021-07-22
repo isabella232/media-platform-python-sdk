@@ -193,7 +193,7 @@ class TestFileService(unittest.TestCase):
                         'path': '/fish.txt',
                         'id': None,
                         'acl': 'public',
-                        'mime_type': 'image/jpg'
+                        'mimeType': 'image/jpg'
                     }))
 
     @httpretty.activate
