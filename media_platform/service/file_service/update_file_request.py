@@ -13,7 +13,7 @@ class UpdateFileRequest(MediaPlatformRequest):
         self.file_id = None
         self.path = None
         self.acl = None
-        self.mime_type =None
+        self.mime_type = None
 
     def set_path(self, path: str) -> UpdateFileRequest:
         self.path = path
