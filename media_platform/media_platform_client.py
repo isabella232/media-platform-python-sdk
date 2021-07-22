@@ -12,6 +12,7 @@ from media_platform.service.text_service.text_service import TextService
 from media_platform.service.transcode_service.transcode_service import TranscodeService
 from media_platform.service.video_service.video_service import VideoService
 from media_platform.service.visual_search_service.visual_search_service import VisualSearchService
+from media_platform.service.sanitation_service.sanitation_service import SanitationService
 
 
 class MediaPlatformClient:
@@ -31,3 +32,4 @@ class MediaPlatformClient:
         self.live_service = LiveService(domain, authenticated_http_client)
         self.scanner_service = ScannerService(domain, authenticated_http_client)
         self.visual_search_service = VisualSearchService(domain, authenticated_http_client)
+        self.sanitation_service = SanitationService(domain, authenticated_http_client)
