@@ -19,7 +19,7 @@ class TestSanitationService(unittest.TestCase):
     authenticator = AppAuthenticator('app', 'secret')
     authenticated_http_client = AuthenticatedHTTPClient(authenticator)
 
-    sanitation_service = SanitationService('fish.barrel', authenticated_http_client, authenticator)
+    sanitation_service = SanitationService('fish.barrel', authenticated_http_client)
 
     @httpretty.activate
     def test_sanitation_request(self):
