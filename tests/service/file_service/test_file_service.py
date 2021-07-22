@@ -183,7 +183,8 @@ class TestFileService(unittest.TestCase):
             body=json.dumps(response_body.serialize())
         )
 
-        file_descriptor = self.file_service.update_file_request().set_path('/fish.txt').set_acl(ACL.public).execute()
+        file_descriptor = self.file_service.update_file_request().set_path('/fish.txt').\
+            set_acl(ACL.public).set_mime_type('image/jpg').execute()
 
         assert_that(file_descriptor.serialize(), is_(payload))
         assert_that(file_descriptor, instance_of(FileDescriptor))
@@ -191,7 +192,8 @@ class TestFileService(unittest.TestCase):
                     is_({
                         'path': '/fish.txt',
                         'id': None,
-                        'acl': 'public'
+                        'acl': 'public',
+                        'mime_type': 'image/jpg'
                     }))
 
     @httpretty.activate

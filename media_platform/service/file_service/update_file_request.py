@@ -13,6 +13,7 @@ class UpdateFileRequest(MediaPlatformRequest):
         self.file_id = None
         self.path = None
         self.acl = None
+        self.mime_type =None
 
     def set_path(self, path: str) -> UpdateFileRequest:
         self.path = path
@@ -24,6 +25,10 @@ class UpdateFileRequest(MediaPlatformRequest):
 
     def set_acl(self, acl: ACL) -> UpdateFileRequest:
         self.acl = acl
+        return self
+
+    def set_mime_type(self, mime_type: str) -> UpdateFileRequest:
+        self.mime_type = mime_type
         return self
 
     def execute(self) -> FileDescriptor:
@@ -43,4 +48,5 @@ class UpdateFileRequest(MediaPlatformRequest):
             'id': self.file_id,
             'path': self.path,
             'acl': self.acl,
+            'mime_type': self.mime_type
         }
