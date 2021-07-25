@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 
 from media_platform.service.destination import Destination
@@ -42,4 +44,4 @@ class SanitationRequest(MediaPlatformRequest):
         }
 
     def execute(self) -> SanitationResponse:
-        return super().execute()
+        return cast(SanitationResponse, super().execute())
