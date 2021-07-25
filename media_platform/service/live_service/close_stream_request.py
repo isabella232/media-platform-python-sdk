@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.media_platform_request import MediaPlatformRequest
 
@@ -27,14 +29,14 @@ class CloseStreamRequest(MediaPlatformRequest):
         self.abort = abort
         return self
 
-    def execute(self):
+    def execute(self) -> CloseStreamRequest:
         self.url = self._url + self.stream_id
         query_string = self._query_string()
 
         if query_string:
             self.url += '?' + query_string
 
-        return super().execute()
+        return cast(CloseStreamRequest, super().execute())
 
     def _query_string(self) -> str:
         query_string = ''
