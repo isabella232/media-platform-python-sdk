@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Dict
+
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.file_descriptor import FileType
 from media_platform.service.file_service.file_list import FileList
@@ -40,13 +42,13 @@ class FileListRequest(_ListRequest):
     def execute(self) -> FileList:
         return super().execute()
 
-    def _params(self) -> dict:
+    def _params(self) -> Dict:
         params = super()._params()
 
         params['path'] = self.path
 
         if self.recursive:
-            params['r'] = self.recursive
+            params['r'] = 'yes'
 
         if self.type:
             params['type'] = self.type
