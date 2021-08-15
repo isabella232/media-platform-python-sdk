@@ -446,7 +446,7 @@ class TestFileService(unittest.TestCase):
             'nextPageToken': ['next'],
             'orderBy': ['name'],
             'pageSize': ['12'],
-            'r': ['True'],
+            'r': ['yes'],
             'path': ['/files'],
             'type': ['-'],
             'orderDirection': ['des']
