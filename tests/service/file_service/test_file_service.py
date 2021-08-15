@@ -1,10 +1,11 @@
 import copy
 import json
 import unittest
-from typing import List
+from urllib.parse import urlparse, parse_qs
+import jwt
 
 import httpretty
-from hamcrest import assert_that, instance_of, is_, contains_string, starts_with
+from hamcrest import assert_that, instance_of, is_, contains_string, starts_with, has_entry
 
 from media_platform.auth.app_authenticator import AppAuthenticator
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
@@ -408,10 +409,35 @@ class TestFileService(unittest.TestCase):
             assert_that(dogs.decode('utf-8'), is_('barks!'))
             assert_that(response.headers['Content-Disposition'], is_('inline; filename*=UTF-8\'\'inline-filename.txt'))
 
-    def test_download_file_request_url(self):
-        signed_url = self.file_service.download_file_request().set_path('/file.txt').url()
+    def test_download_file_request_url_attachment(self):
+        file_name = 'file-name'
+        signed_url = self.file_service.download_file_request().set_path('/file.txt').\
+            set_attachment(Attachment(file_name)).url()
 
         assert_that(signed_url, starts_with('https://fish.barrel/file.txt?token='))
+
+        parse_result = urlparse(signed_url)
+        query_params = parse_qs(parse_result.query)
+        token_data = query_params.get('token')
+        claims = jwt.decode(token_data[0], options={"verify_signature": False})
+
+        attachment = claims.get('attachment')
+        assert_that(attachment, has_entry('filename', file_name))
+
+    def test_download_file_request_url_inline(self):
+        file_name = 'file-name'
+        signed_url = self.file_service.download_file_request().set_path('/file.txt').\
+            set_inline(Inline(file_name)).url()
+
+        assert_that(signed_url, starts_with('https://fish.barrel/file.txt?token='))
+
+        parse_result = urlparse(signed_url)
+        query_params = parse_qs(parse_result.query)
+        token_data = query_params.get('token')
+        claims = jwt.decode(token_data[0], options={"verify_signature": False})
+
+        inline = claims.get('inline')
+        assert_that(inline, has_entry('filename', file_name))
 
     @httpretty.activate
     def test_download_file_request(self):
