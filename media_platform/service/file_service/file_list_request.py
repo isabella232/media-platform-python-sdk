@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, cast
 
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.file_descriptor import FileType
@@ -40,7 +40,7 @@ class FileListRequest(_ListRequest):
         return super().set_order_direction(order_direction)
 
     def execute(self) -> FileList:
-        return super().execute()
+        return cast(FileList, super().execute())
 
     def _params(self) -> Dict:
         params = super()._params()
