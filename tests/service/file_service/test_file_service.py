@@ -1,6 +1,7 @@
 import copy
 import json
 import unittest
+from typing import Dict
 from urllib.parse import urlparse, parse_qs
 import jwt
 
@@ -416,12 +417,8 @@ class TestFileService(unittest.TestCase):
 
         assert_that(signed_url, starts_with('https://fish.barrel/file.txt?token='))
 
-        parse_result = urlparse(signed_url)
-        query_params = parse_qs(parse_result.query)
-        token_data = query_params.get('token')
-        claims = jwt.decode(token_data[0], options={"verify_signature": False})
-
-        attachment = claims.get('attachment')
+        claims = self._parse_download_url_token(signed_url)
+        attachment = claims['attachment']
         assert_that(attachment, has_entry('filename', file_name))
 
     def test_download_file_request_url_inline(self):
@@ -431,13 +428,15 @@ class TestFileService(unittest.TestCase):
 
         assert_that(signed_url, starts_with('https://fish.barrel/file.txt?token='))
 
+        claims = self._parse_download_url_token(signed_url)
+        inline = claims['inline']
+        assert_that(inline, has_entry('filename', file_name))
+
+    def _parse_download_url_token(self, signed_url: str) -> Dict:
         parse_result = urlparse(signed_url)
         query_params = parse_qs(parse_result.query)
         token_data = query_params.get('token')
-        claims = jwt.decode(token_data[0], options={"verify_signature": False})
-
-        inline = claims.get('inline')
-        assert_that(inline, has_entry('filename', file_name))
+        return jwt.decode(token_data[0], options={"verify_signature": False})
 
     @httpretty.activate
     def test_download_file_request(self):
