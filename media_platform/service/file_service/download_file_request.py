@@ -49,6 +49,11 @@ class DownloadFileRequest:
         if self.on_expired_redirect_to:
             additional_claims['red'] = self.on_expired_redirect_to
 
+        if self.attachment:
+            additional_claims['attachment'] = self.attachment.serialize()
+        elif self.inline:
+            additional_claims['inline'] = self.inline.serialize()
+
         token = Token(
             self._app_urn,
             self._app_urn,
