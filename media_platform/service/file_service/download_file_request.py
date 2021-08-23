@@ -69,12 +69,6 @@ class DownloadFileRequest:
         if self.attachment and self.inline:
             raise ValueError('Can\'t set both attachment and inline')
 
-        if self.attachment:
-            url.add(query_params={'filename': self.attachment.file_name})
-        elif self.inline:
-            url.add(query_params={'filename': self.inline.file_name})
-            url.add(query_params={'inline': ''})
-
         return url.url
 
     def execute(self) -> requests.Response:
