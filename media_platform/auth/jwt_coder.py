@@ -8,8 +8,6 @@ def sign_jwt(token: Token, secret: str) -> str:
 
 
 def decode_jwt(shared_secret: str, urn: str, signed_token: str) -> Token:
-    claims = jwt.decode(signed_token, shared_secret, algorithms=['HS256'], subject=urn, options={
-        'verify_aud': False
-    })
+    claims = jwt.decode(signed_token, shared_secret, algorithms=['HS256'], options={'verify_aud': False})
 
     return Token.from_claims(claims)
