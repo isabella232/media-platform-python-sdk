@@ -5,6 +5,8 @@ import logging
 from typing import Dict
 
 from tusclient import client
+
+from media_platform.service.destination import Destination
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.callback import Callback
 from media_platform.service.file_descriptor import ACL, FileDescriptor, FileMimeType
@@ -18,17 +20,28 @@ class UploadFileRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
         super().__init__(authenticated_http_client, 'POST', base_url, FileDescriptor)
 
+        self.bucket = None
         self.path = None
+        self.content = None
         self.mime_type = FileMimeType.defualt
         self.acl = ACL.public
         self.size = None
         self.lifecycle = None
         self.callback = None
-        self.bucket = None
         self.response_processor = None
         self.filename = 'filename'
-        self.content = None
         self.protocol = None
+
+    def set_destination(self, destination: Destination) -> UploadFileRequest:
+        self.bucket = destination.bucket
+        self.path = destination.path
+        self.acl = destination.acl
+        self.lifecycle = destination.lifecycle
+
+        if not self.path:
+            logging.warning('path is not set')
+
+        return self
 
     def set_path(self, path: str) -> UploadFileRequest:
         self.path = path
