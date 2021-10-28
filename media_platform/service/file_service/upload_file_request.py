@@ -115,8 +115,6 @@ class UploadFileRequest(MediaPlatformRequest):
         }
 
     def _tus_upload(self, upload_url: str, params: Dict) -> FileDescriptor:
-        logging.info(upload_url)
-
         tus = client.TusClient(url=upload_url)
 
         uploader = tus.uploader(file_stream=self.content, chunk_size=5 * 1024 * 1024)
