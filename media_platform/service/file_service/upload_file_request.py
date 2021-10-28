@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import json
+import logging
+from typing import Dict
 
+from tusclient import client
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.callback import Callback
 from media_platform.service.file_descriptor import ACL, FileDescriptor, FileMimeType
+from media_platform.service.file_service.upload_configuration import Protocol
 from media_platform.service.file_service.upload_configuration_request import UploadConfigurationRequest
 from media_platform.service.lifecycle import Lifecycle
 from media_platform.service.media_platform_request import MediaPlatformRequest
@@ -24,6 +28,7 @@ class UploadFileRequest(MediaPlatformRequest):
         self.response_processor = None
         self.filename = 'filename'
         self.content = None
+        self.protocol = None
 
     def set_path(self, path: str) -> UploadFileRequest:
         self.path = path
@@ -61,8 +66,12 @@ class UploadFileRequest(MediaPlatformRequest):
         self.filename = filename
         return self
 
-    def set_content(self, content: str) -> UploadFileRequest:
+    def set_content(self, content: str or iter) -> UploadFileRequest:
         self.content = content
+        return self
+
+    def set_protocol(self, protocol: Protocol) -> UploadFileRequest:
+        self.protocol = protocol
         return self
 
     def validate(self):
@@ -76,13 +85,34 @@ class UploadFileRequest(MediaPlatformRequest):
             self.path
         ).set_acl(self.acl).set_mime_type(self.mime_type).set_callback(self.callback).set_size(
             self.size
-        ).set_bucket(self.bucket).execute()
+        ).set_bucket(self.bucket).set_protocol(self.protocol).execute()
 
+        upload_url = config.upload_url
         params = self._params()
-        return self.authenticated_http_client.post_data(config.upload_url, self.content, self.mime_type, params,
-                                                        FileDescriptor, self.filename, self.response_processor)
+
+        if self.protocol == 'tus':
+            return self._tus_upload(upload_url, params)
+        else:
+            return self.authenticated_http_client.put_data(upload_url, self.content, self.mime_type, params,
+                                                           FileDescriptor, self.filename, self.response_processor)
 
     def _params(self) -> dict:
         return {
             'lifecycle': json.dumps(self.lifecycle.serialize()) if self.lifecycle else None,
         }
+
+    def _tus_upload(self, upload_url: str, params: Dict) -> FileDescriptor:
+        logging.info(upload_url)
+
+        tus = client.TusClient(url=upload_url)
+
+        uploader = tus.uploader(file_stream=self.content, chunk_size=5 * 1024 * 1024)
+        uploader.metadata.update({
+            'filetype': self.mime_type,
+            'filename': self.filename
+        })
+
+        uploader.upload()
+
+        # finalizer
+        return self.authenticated_http_client.put(upload_url, None, FileDescriptor, params)

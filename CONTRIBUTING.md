@@ -12,7 +12,7 @@ cd media-platform-python-sdk
 
 ### Requirements
 
-- Python 2.7, 3.7
+- Python >=3.7
 - virtualenv
 
 ### Running Virtualenv

@@ -185,7 +185,7 @@ class TestFileService(unittest.TestCase):
             body=json.dumps(response_body.serialize())
         )
 
-        file_descriptor = self.file_service.update_file_request().set_path('/fish.txt').\
+        file_descriptor = self.file_service.update_file_request().set_path('/fish.txt'). \
             set_acl(ACL.public).set_mime_type('image/jpg').execute()
 
         assert_that(file_descriptor.serialize(), is_(payload))
@@ -196,32 +196,6 @@ class TestFileService(unittest.TestCase):
                         'id': None,
                         'acl': 'public',
                         'mimeType': 'image/jpg'
-                    }))
-
-    @httpretty.activate
-    def test_upload_configuration_request(self):
-        response_body = RestResult(0, 'OK', {
-            'uploadToken': 'token',
-            'uploadUrl': 'url'
-        })
-        httpretty.register_uri(
-            httpretty.POST,
-            'https://fish.barrel/_api/v2/upload/configuration',
-            body=json.dumps(response_body.serialize())
-        )
-
-        upload_url = self.file_service.upload_configuration_request().set_path('/fish.txt').execute()
-
-        assert_that(upload_url, instance_of(UploadConfiguration))
-        assert_that(upload_url.upload_url, is_('url'))
-        assert_that(json.loads(httpretty.last_request().body),
-                    is_({
-                        'mimeType': None,
-                        'path': '/fish.txt',
-                        'bucket': None,
-                        'size': None,
-                        'acl': None,
-                        'callback': None
                     }))
 
     @httpretty.activate
@@ -246,7 +220,36 @@ class TestFileService(unittest.TestCase):
                         'path': '/fish.txt',
                         'size': None,
                         'acl': None,
-                        'callback': None
+                        'callback': None,
+                        'protocol': None
+                    }))
+
+    @httpretty.activate
+    def test_upload_configuration_request_tus(self):
+        response_body = RestResult(0, 'OK', {
+            'uploadUrl': 'url'
+        })
+        httpretty.register_uri(
+            httpretty.POST,
+            'https://fish.barrel/_api/v3/upload/configuration',
+            body=json.dumps(response_body.serialize())
+        )
+
+        upload_configuration = self.file_service.upload_configuration_request().set_path('/fish.txt').set_protocol(
+            'tus'
+        ).execute()
+
+        assert_that(upload_configuration, instance_of(UploadConfiguration))
+        assert_that(upload_configuration.upload_url, is_('url'))
+        assert_that(json.loads(httpretty.last_request().body),
+                    is_({
+                        'mimeType': None,
+                        'bucket': None,
+                        'path': '/fish.txt',
+                        'size': None,
+                        'acl': None,
+                        'callback': None,
+                        'protocol': 'tus'
                     }))
 
     @httpretty.activate
@@ -266,7 +269,7 @@ class TestFileService(unittest.TestCase):
                                                          123).serialize()
                                           )
         httpretty.register_uri(
-            httpretty.POST,
+            httpretty.PUT,
             'https://fish.barrel/v3/cryptic-path',
             body=json.dumps(upload_response_body.serialize())
         )
@@ -279,15 +282,6 @@ class TestFileService(unittest.TestCase):
 
         assert_that(file_descriptor, instance_of(FileDescriptor))
         assert_that(file_descriptor.path, is_('/fish.txt'))
-
-        request_body = httpretty.last_request().body.decode('utf-8')
-
-        assert_that(request_body,
-                    contains_string('Content-Disposition: form-data; name="lifecycle"\r\n\r\n%s' %
-                                    json.dumps(upload_lifecycle.serialize())))
-        assert_that(request_body,
-                    contains_string('Content-Disposition: form-data; name="file"; filename="fishenzon"\r\n'
-                                    'Content-Type: %s\r\n\r\n%s' % (upload_mime_type, upload_content)))
 
     @httpretty.activate
     def test_import_file_request(self):
@@ -412,7 +406,7 @@ class TestFileService(unittest.TestCase):
 
     def test_download_file_request_url_attachment(self):
         file_name = 'file-name'
-        signed_url = self.file_service.download_file_request().set_path('/file.txt').\
+        signed_url = self.file_service.download_file_request().set_path('/file.txt'). \
             set_attachment(Attachment(file_name)).url()
 
         assert_that(signed_url, starts_with('https://fish.barrel/file.txt?token='))
@@ -423,7 +417,7 @@ class TestFileService(unittest.TestCase):
 
     def test_download_file_request_url_inline(self):
         file_name = 'file-name'
-        signed_url = self.file_service.download_file_request().set_path('/file.txt').\
+        signed_url = self.file_service.download_file_request().set_path('/file.txt'). \
             set_inline(Inline(file_name)).url()
 
         assert_that(signed_url, starts_with('https://fish.barrel/file.txt?token='))

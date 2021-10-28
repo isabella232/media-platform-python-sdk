@@ -16,6 +16,7 @@ class UploadConfigurationRequest(MediaPlatformRequest):
         self.acl = None
         self.size = None
         self.callback = None
+        self.protocol = None
 
     def set_path(self, path: str) -> UploadConfigurationRequest:
         self.path = path
@@ -41,6 +42,10 @@ class UploadConfigurationRequest(MediaPlatformRequest):
         self.callback = callback
         return self
 
+    def set_protocol(self, protocol: str) -> UploadConfigurationRequest:
+        self.protocol = protocol
+        return self
+
     def execute(self) -> UploadConfiguration:
         return super().execute()
 
@@ -55,5 +60,6 @@ class UploadConfigurationRequest(MediaPlatformRequest):
             'mimeType': self.mime_type,
             'size': self.size,
             'acl': self.acl,
-            'callback': self.callback.serialize() if self.callback else None
+            'callback': self.callback.serialize() if self.callback else None,
+            'protocol': self.protocol
         }

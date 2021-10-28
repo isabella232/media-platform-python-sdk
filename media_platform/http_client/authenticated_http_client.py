@@ -43,12 +43,13 @@ class AuthenticatedHTTPClient:
     def post(self, url: str, data: Dict = None, payload_type: Deserializable = None) -> Optional[Deserializable]:
         return self._send_request('POST', url, json=data, payload_type=payload_type)
 
-    def put(self, url: str, data: Dict = None, payload_type: Deserializable = None) -> Optional[Deserializable]:
-        return self._send_request('PUT', url, json=data, payload_type=payload_type)
+    def put(self, url: str, data: Dict = None, payload_type: Deserializable = None, params: Dict = None) -> Optional[Deserializable]:
+        return self._send_request('PUT', url, json=data, payload_type=payload_type, params=params)
 
     def delete(self, url: str, params: Dict = None, payload_type: Deserializable = None) -> Optional[Deserializable]:
         return self._send_request('DELETE', url, params=params, payload_type=payload_type)
 
+    # deprecated
     def post_data(self, url: str, content: str, mime_type: str, params: Dict = None,
                   payload_type: Type[Deserializable] = None, filename: str = None,
                   response_processor: Callable = None) -> Optional[Deserializable]:
@@ -59,10 +60,32 @@ class AuthenticatedHTTPClient:
 
         encoder = MultipartEncoder(fields)
 
+        headers = self._base_headers()
+        headers['Content-Type'] = encoder.content_type
+
         try:
-            headers = self._base_headers()
-            headers['Content-Type'] = encoder.content_type
             response = self._session.post(url, data=encoder, headers=headers)
+        except RetryError as e:
+            raise MediaPlatformException(cause=e)
+
+        if response_processor:
+            return response_processor(response)
+        else:
+            return ResponseProcessor.process(response, payload_type)
+
+    def put_data(self, url: str, content: iter, mime_type: str, params: Dict = None,
+                 payload_type: Type[Deserializable] = None, filename: str = None,
+                 response_processor: Callable = None) -> Optional[Deserializable]:
+        query = {
+            'filename': filename
+        }
+        query.update(params)
+        headers = self._base_headers()
+        headers['Content-Type'] = mime_type
+
+        try:
+            # https://docs.python-requests.org/en/master/user/advanced/#chunk-encoded-requests
+            response = self._session.put(url, data=content, params=query, headers=headers)
         except RetryError as e:
             raise MediaPlatformException(cause=e)
 
