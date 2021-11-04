@@ -10,10 +10,10 @@ from media_platform.service.media_platform_request import MediaPlatformRequest
 class UploadConfigurationRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
         super().__init__(authenticated_http_client, 'POST', base_url + '/v3/upload/configuration', UploadConfiguration)
-        self.path = None
         self.bucket = None
-        self.mime_type = None
+        self.path = None
         self.acl = None
+        self.mime_type = None
         self.size = None
         self.callback = None
         self.protocol = None
