@@ -3,10 +3,10 @@ import json
 import unittest
 from typing import Dict
 from urllib.parse import urlparse, parse_qs
-import jwt
 
 import httpretty
-from hamcrest import assert_that, instance_of, is_, contains_string, starts_with, has_entry
+import jwt
+from hamcrest import assert_that, instance_of, is_, starts_with, has_entry
 
 from media_platform.auth.app_authenticator import AppAuthenticator
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
@@ -334,6 +334,38 @@ class TestFileService(unittest.TestCase):
                               'passthrough': False
                           }
                           }, json.loads(httpretty.last_request().body))
+
+    @httpretty.activate
+    def test_sync_import_file_request(self):
+        file_descriptor = FileDescriptor('/img.png', 'file-id', FileType.file, 'image/png', 123).serialize()
+        response_body = RestResult(0, 'OK', file_descriptor)
+        httpretty.register_uri(
+            httpretty.PUT,
+            'https://fish.barrel/_api/import/file',
+            body=json.dumps(response_body.serialize())
+        )
+
+        imported_file = self.file_service.sync_import_file_request().set_destination(
+            Destination('/img.png')
+        ).set_source_url(
+            'source-url'
+        ).execute()
+
+        self.assertEqual(
+            {
+                'destination': {
+                    'acl': 'public',
+                    'bucket': None,
+                    'directory': None,
+                    'lifecycle': None,
+                    'path': '/img.png'
+                },
+                'externalAuthorization': None,
+                'sourceUrl': 'source-url'
+            },
+            json.loads(httpretty.last_request().body)
+        )
+        self.assertEqual(file_descriptor, imported_file.serialize())
 
     @httpretty.activate
     def test_copy_file_request(self):
