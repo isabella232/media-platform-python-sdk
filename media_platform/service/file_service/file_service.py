@@ -11,6 +11,7 @@ from media_platform.service.file_service.file_list_request import FileListReques
 from media_platform.service.file_service.file_metadata_request import FileMetadataRequest
 from media_platform.service.file_service.file_request import FileRequest
 from media_platform.service.file_service.import_file_request import ImportFileRequest
+from media_platform.service.file_service.sync_import_file_request import SyncImportFileRequest
 from media_platform.service.file_service.update_file_request import UpdateFileRequest
 from media_platform.service.file_service.upload_configuration_request import UploadConfigurationRequest
 from media_platform.service.file_service.upload_file_request import UploadFileRequest
@@ -47,6 +48,9 @@ class FileService(MediaPlatformService):
 
     def import_file_request(self) -> ImportFileRequest:
         return ImportFileRequest(self._authenticated_http_client, self._base_url)
+
+    def sync_import_file_request(self) -> ImportFileRequest:
+        return SyncImportFileRequest(self._authenticated_http_client, self._base_url)
 
     def delete_file_request(self) -> DeleteFileRequest:
         return DeleteFileRequest(self._authenticated_http_client, self._base_url)
