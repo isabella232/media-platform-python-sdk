@@ -10,7 +10,7 @@ from media_platform.service.destination import Destination
 from media_platform.http_client.authenticated_http_client import AuthenticatedHTTPClient
 from media_platform.service.callback import Callback
 from media_platform.service.file_descriptor import ACL, FileDescriptor, FileMimeType
-from media_platform.service.file_service.upload_configuration import Protocol
+from media_platform.service.file_service.upload_configuration import Protocol, UploadConfiguration
 from media_platform.service.file_service.upload_configuration_request import UploadConfigurationRequest
 from media_platform.service.lifecycle import Lifecycle
 from media_platform.service.media_platform_request import MediaPlatformRequest
@@ -104,7 +104,7 @@ class UploadFileRequest(MediaPlatformRequest):
         params = self._params()
 
         if self.protocol == 'tus':
-            return self._tus_upload(upload_url, params)
+            return self._tus_upload(config, params)
         else:
             return self.authenticated_http_client.put_data(upload_url, self.content, self.mime_type, params,
                                                            FileDescriptor, self.filename, self.response_processor)
@@ -114,16 +114,16 @@ class UploadFileRequest(MediaPlatformRequest):
             'lifecycle': json.dumps(self.lifecycle.serialize()) if self.lifecycle else None,
         }
 
-    def _tus_upload(self, upload_url: str, params: Dict) -> FileDescriptor:
-        tus = client.TusClient(url=upload_url)
+    def _tus_upload(self, config: UploadConfiguration, params: Dict) -> FileDescriptor:
+        tus = client.TusClient(url=config.upload_url)
 
-        uploader = tus.uploader(file_stream=self.content, chunk_size=5 * 1024 * 1024)
-        uploader.metadata.update({
-            'filetype': self.mime_type,
-            'filename': self.filename
+        uploader = tus.uploader(file_stream=self.content, chunk_size=5 * 1024 * 1024, metadata={
+            'filename': self.filename,
+            'token': config.upload_token
         })
 
         uploader.upload()
 
         # finalizer
-        return self.authenticated_http_client.put(upload_url, None, FileDescriptor, params)
+        return self.authenticated_http_client.put(config.upload_url + '/' + config.upload_token, None, FileDescriptor,
+                                                  params)
