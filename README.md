@@ -45,3 +45,12 @@ It offers computing, storage and application services for web, mobile and backen
 [travis-url]: https://travis-ci.org/wix/media-platform-python-sdk
 
 ..
+
+## Releasing manually
+
+set PACKAGE_VERSION in setup.py
+
+```shell
+python setup.py sdist
+twine upload dist/*
+```
