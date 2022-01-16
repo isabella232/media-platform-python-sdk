@@ -1,9 +1,9 @@
 name: Media Platform Python SDK
 
 on:
-  create:
+  push:
     tags:
-      - 1.*
+      - "1.*"
 
 jobs:
   build:
