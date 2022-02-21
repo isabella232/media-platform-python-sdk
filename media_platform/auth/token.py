@@ -21,7 +21,7 @@ class Token:
     def from_claims(data: dict) -> Token:
         additional_claims = Token._extract_additional_claims(data)
 
-        return Token(data['iss'], data['sub'], data.get('aud'), data.get('iat'), data.get('exp'),
+        return Token(data['iss'], data.get('sub'), data.get('aud'), data.get('iat'), data.get('exp'),
                      additional_claims, data.get('jti'))
 
     def to_claims(self) -> dict:
