@@ -49,7 +49,7 @@ class FileService(MediaPlatformService):
     def import_file_request(self) -> ImportFileRequest:
         return ImportFileRequest(self._authenticated_http_client, self._base_url)
 
-    def sync_import_file_request(self) -> ImportFileRequest:
+    def sync_import_file_request(self) -> SyncImportFileRequest:
         return SyncImportFileRequest(self._authenticated_http_client, self._base_url)
 
     def delete_file_request(self) -> DeleteFileRequest:

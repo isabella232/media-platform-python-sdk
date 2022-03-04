@@ -6,6 +6,7 @@ from media_platform.service.archive_service.archive_manifest_url_request import 
 from media_platform.service.archive_service.create_archive_manifest_request import CreateArchiveManifestRequest
 from media_platform.service.archive_service.create_archive_request import CreateArchiveRequest
 from media_platform.service.archive_service.extract_archive_request import ExtractArchiveRequest
+from media_platform.service.archive_service.extract_archive_v2_request import ExtractArchiveV2Request
 from media_platform.service.media_platform_service import MediaPlatformService
 
 
@@ -27,3 +28,6 @@ class ArchiveService(MediaPlatformService):
 
     def extract_archive_request(self) -> ExtractArchiveRequest:
         return ExtractArchiveRequest(self._authenticated_http_client, self._base_url)
+
+    def extract_archive_v2_request(self) -> ExtractArchiveV2Request:
+        return ExtractArchiveV2Request(self._authenticated_http_client, self._base_url)
