@@ -54,3 +54,14 @@ set PACKAGE_VERSION in setup.py
 python setup.py sdist
 twine upload dist/*
 ```
+
+
+## Running Demo locally
+update globals.py with project wixmp-38be4d0b88020d170fae2a8d, application 3966649e6f1a4a9db374a88dc63a6132 and its secret.
+
+```
+virtualenv -p python3 run
+source run/bin/activate 
+pip install .
+
+```
