@@ -1,4 +1,4 @@
-from demo.globals import demo_path, resources_dir, client, config, project_id
+from demo.globals import demo_path, resources_dir, client, project_id
 from media_platform import FileDescriptor
 from media_platform.service.file_service.upload_configuration import Protocol
 from media_platform.service.lifecycle import Lifecycle, Action
