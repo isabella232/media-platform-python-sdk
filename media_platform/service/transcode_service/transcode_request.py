@@ -9,7 +9,6 @@ from media_platform.service.source import Source
 class TranscodeRequest(MediaPlatformRequest):
     def __init__(self, authenticated_http_client: AuthenticatedHTTPClient, base_url: str):
         super().__init__(authenticated_http_client, 'POST', base_url + '/av/transcode', TranscodeJobGroup)
-
         self.sources = []
         self.specifications = []
         self.callback = None

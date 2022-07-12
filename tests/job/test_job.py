@@ -29,9 +29,7 @@ transcode_specification = TranscodeSpecification(destination, quality=VideoQuali
 transcode_result = TranscodeResult(
     file_descriptor=FileDescriptor(
         '/path.mp4', 'file-id', FileType.file, 'video/mp4', 123, ACL.private, date_created=frozen_time,
-        date_updated=frozen_time),
-    master_ffmpeg_command='command',
-    error_class='error_class'
+        date_updated=frozen_time)
 )
 
 extract_archive_job = ExtractArchiveJob(
